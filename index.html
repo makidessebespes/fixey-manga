@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixey マンガシリーズ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    color: #fff;
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+  }
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 16px;
+    color: #888;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 20px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #1a1a2e;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 340px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .card-thumb {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .card-body {
+    padding: 20px;
+  }
+  .card-number {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .card:nth-child(1) .card-number { color: #4facfe; }
+  .card:nth-child(2) .card-number { color: #ff6b35; }
+  .card:nth-child(3) .card-number { color: #00b894; }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.7;
+  }
+  .card-cta {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  .card-cta:hover { opacity: 0.85; }
+  .card:nth-child(1) .card-cta { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; }
+  .card:nth-child(2) .card-cta { background: linear-gradient(135deg, #ff6b35, #ffa500); color: #000; }
+  .card:nth-child(3) .card-cta { background: linear-gradient(135deg, #00b894, #55efc4); color: #000; }
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 12px;
+    color: #555;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .footer a { color: #4facfe; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 26px; }
+    .hero p { font-size: 14px; }
+    .cards { gap: 20px; padding: 20px 16px 60px; }
+    .card { width: 100%; max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Fixey マンガシリーズ</h1>
+  <p>現場の「困った」をAIが解決する。<br>保全の現場で起きるリアルなストーリーを漫画でお届けします。</p>
+</div>
+
+<div class="cards">
+  <a class="card" href="manga_viewer.html">
+    <img class="card-thumb" src="manga_images/slide_01.jpg" alt="第1弾 表紙">
+    <div class="card-body">
+      <div class="card-number">第1弾</div>
+      <div class="card-title">知らなければ1日止まっていた故障</div>
+      <div class="card-desc">配属2週間の山田が突然の設備停止に直面。経験ゼロでも、AIの力で30分で復旧を成し遂げる。</div>
+      <span class="card-cta">読む →</span>
+    </div>
+  </a>
+
+  <a class="card" href="manga_viewer_02.html">
+    <img class="card-thumb" src="manga2_images/slide_01.jpg" alt="第2弾 表紙">
+    <div class="card-body">
+      <div class="card-number">第2弾</div>
+      <div class="card-title">「あの人しか分からない」を終わらせた日</div>
+      <div class="card-desc">ベテランしか対応できない属人化の壁。高橋はFixeyを使い、誰もが対応できる現場へと変えていく。</div>
+      <span class="card-cta">読む →</span>
+    </div>
+  </a>
+
+  <a class="card" href="manga_viewer_03.html">
+    <img class="card-thumb" src="manga4_images/slide_01.jpg" alt="第3弾 表紙">
+    <div class="card-body">
+      <div class="card-number">第3弾</div>
+      <div class="card-title">「分かっているのに、できない」を終わらせた日</div>
+      <div class="card-desc">突発対応に追われ、予防保全が後回しに。佐藤がFixeyで「先送り」を断ち切り、現場を変える物語。</div>
+      <span class="card-cta">読む →</span>
+    </div>
+  </a>
+</div>
+
+<div class="footer">
+  <p>© 2026 <a href="https://fixey.ai" target="_blank">Fixey</a> — AI保全プラットフォーム</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>「分かっているのに、できない」を終わらせた日 - 漫画ビューア</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    color: #fff;
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    user-select: none;
+  }
+  .viewer { display: flex; flex-direction: column; height: 100vh; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 20px; background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px); z-index: 10; min-height: 48px;
+  }
+  .header h1 { font-size: 16px; font-weight: 600; color: #e0e0e0; letter-spacing: 1px; }
+  .slide-counter { font-size: 14px; color: #aaa; font-weight: 500; }
+  .slide-container {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .slide-image {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    transition: opacity 0.4s ease; box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+  .slide-image.loading { opacity: 0; }
+  .nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.4); border: none; color: #fff; font-size: 36px;
+    width: 60px; height: 80px; cursor: pointer; border-radius: 8px;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+    z-index: 5; backdrop-filter: blur(5px);
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-50%) scale(1.05); }
+  .nav-btn:active { transform: translateY(-50%) scale(0.95); }
+  .nav-btn.prev { left: 15px; }
+  .nav-btn.next { right: 15px; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+  .nav-btn:disabled:hover { background: rgba(0,0,0,0.4); transform: translateY(-50%); }
+  .progress-bar { height: 4px; background: rgba(255,255,255,0.1); position: relative; }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #00b894, #55efc4);
+    transition: width 0.4s ease; border-radius: 0 2px 2px 0;
+  }
+  .footer {
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px 20px; background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px); gap: 12px; flex-wrap: wrap;
+  }
+  .chapter-info { font-size: 12px; color: #888; text-align: center; }
+  .thumbnail-strip { display: flex; gap: 6px; overflow-x: auto; padding: 4px; max-width: 100%; }
+  .thumbnail-strip::-webkit-scrollbar { height: 4px; }
+  .thumbnail-strip::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+  .thumbnail-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  .thumb {
+    width: 64px; height: 36px; object-fit: cover; border-radius: 4px;
+    cursor: pointer; opacity: 0.5; transition: all 0.2s;
+    border: 2px solid transparent; flex-shrink: 0;
+  }
+  .thumb:hover { opacity: 0.8; transform: scale(1.1); }
+  .thumb.active { opacity: 1; border-color: #00b894; box-shadow: 0 0 10px rgba(0,184,148,0.4); }
+  .fullscreen-btn {
+    position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5);
+    border: none; color: #fff; font-size: 18px; width: 40px; height: 40px;
+    border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; z-index: 5; transition: all 0.2s;
+  }
+  .fullscreen-btn:hover { background: rgba(255,255,255,0.15); }
+  .keyboard-hint {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; color: rgba(255,255,255,0.3); z-index: 5;
+    pointer-events: none; transition: opacity 0.5s;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+  .slide-image:not(.loading) { animation: slideIn 0.4s ease; }
+  @media (max-width: 768px) {
+    .nav-btn { width: 44px; height: 60px; font-size: 24px; }
+    .nav-btn.prev { left: 5px; } .nav-btn.next { right: 5px; }
+    .header h1 { font-size: 13px; } .thumb { width: 48px; height: 27px; }
+  }
+</style>
+</head>
+<body>
+<div class="viewer">
+  <div class="header">
+    <h1>第3弾：「分かっているのに、できない」を終わらせた日</h1>
+    <span class="slide-counter" id="counter">1 / 13</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress" style="width: 7.69%"></div>
+  </div>
+  <div class="slide-container" id="slideContainer">
+    <button class="nav-btn prev" id="prevBtn" onclick="navigate(-1)" disabled>&#9664;</button>
+    <img class="slide-image" id="slideImage" src="manga4_images/slide_01.jpg" alt="Slide 1">
+    <button class="nav-btn next" id="nextBtn" onclick="navigate(1)">&#9654;</button>
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()" title="フルスクリーン">&#9974;</button>
+    <div class="keyboard-hint" id="hint">← → キーで移動 / F でフルスクリーン</div>
+  </div>
+  <div class="footer">
+    <div class="chapter-info" id="chapterInfo">表紙：「分かっているのに、できない」を終わらせた日</div>
+    <div class="thumbnail-strip" id="thumbStrip"></div>
+  </div>
+</div>
+<script>
+const TOTAL_SLIDES = 13;
+const IMAGE_DIR = 'manga4_images';
+let currentSlide = 1;
+
+const slideInfo = {
+  1:  { chapter: '表紙', title: '「分かっているのに、できない」を終わらせた日' },
+  2:  { chapter: '第1話', title: '佐藤の日常 ― 違和感' },
+  3:  { chapter: '第2話', title: '突発対応の嵐' },
+  4:  { chapter: '第3話', title: 'Excelとの格闘' },
+  5:  { chapter: '第4話', title: '先送りの繰り返し' },
+  6:  { chapter: '第5話', title: '現場の現実' },
+  7:  { chapter: '第6話', title: '同僚の一言' },
+  8:  { chapter: '第7話', title: 'Fixeyに入力' },
+  9:  { chapter: '第8話', title: '分析結果' },
+  10: { chapter: '第9話', title: '対策実施' },
+  11: { chapter: '第10話', title: '成果' },
+  12: { chapter: '第11話', title: '振り返りと気づき' },
+  13: { chapter: '第12話', title: '決意 ― エピローグ' }
+};
+
+const thumbStrip = document.getElementById('thumbStrip');
+for (let i = 1; i <= TOTAL_SLIDES; i++) {
+  const img = document.createElement('img');
+  img.className = 'thumb' + (i === 1 ? ' active' : '');
+  img.src = `${IMAGE_DIR}/slide_${String(i).padStart(2,'0')}.jpg`;
+  img.alt = `Slide ${i}`;
+  img.dataset.slide = i;
+  img.onclick = () => goToSlide(i);
+  thumbStrip.appendChild(img);
+}
+
+function goToSlide(n) { if (n < 1 || n > TOTAL_SLIDES) return; currentSlide = n; updateView(); }
+function navigate(dir) { goToSlide(currentSlide + dir); }
+
+function updateView() {
+  const img = document.getElementById('slideImage');
+  img.classList.add('loading');
+  const newSrc = `${IMAGE_DIR}/slide_${String(currentSlide).padStart(2,'0')}.jpg`;
+  const preload = new Image();
+  preload.onload = () => { img.src = newSrc; img.classList.remove('loading'); };
+  preload.src = newSrc;
+  document.getElementById('counter').textContent = `${currentSlide} / ${TOTAL_SLIDES}`;
+  document.getElementById('progress').style.width = `${(currentSlide / TOTAL_SLIDES) * 100}%`;
+  const info = slideInfo[currentSlide];
+  document.getElementById('chapterInfo').textContent = `${info.chapter}：${info.title}`;
+  document.getElementById('prevBtn').disabled = currentSlide === 1;
+  document.getElementById('nextBtn').disabled = currentSlide === TOTAL_SLIDES;
+  document.querySelectorAll('.thumb').forEach(t => {
+    t.classList.toggle('active', parseInt(t.dataset.slide) === currentSlide);
+    if (parseInt(t.dataset.slide) === currentSlide) t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  });
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+document.addEventListener('keydown', (e) => {
+  switch(e.key) {
+    case 'ArrowLeft': navigate(-1); break; case 'ArrowRight': navigate(1); break;
+    case 'ArrowUp': navigate(-1); break; case 'ArrowDown': navigate(1); break;
+    case 'Home': goToSlide(1); break; case 'End': goToSlide(TOTAL_SLIDES); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+  }
+});
+
+document.getElementById('slideContainer').addEventListener('click', (e) => {
+  if (e.target.closest('.nav-btn') || e.target.closest('.fullscreen-btn')) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  (e.clientX - rect.left < rect.width / 2) ? navigate(-1) : navigate(1);
+});
+
+let touchStartX = 0;
+document.getElementById('slideContainer').addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.getElementById('slideContainer').addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) navigate(diff > 0 ? 1 : -1);
+}, { passive: true });
+
+document.addEventListener('keydown', () => { document.getElementById('hint').style.opacity = '0'; }, { once: true });
+
+function preloadAdjacent() {
+  [-1, 1, 2].forEach(offset => {
+    const n = currentSlide + offset;
+    if (n >= 1 && n <= TOTAL_SLIDES) new Image().src = `${IMAGE_DIR}/slide_${String(n).padStart(2,'0')}.jpg`;
+  });
+}
+setInterval(preloadAdjacent, 2000);
+preloadAdjacent();
+</script>
+</body>
+</html>
