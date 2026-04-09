@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixey シーン別活用イメージ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: #f7f9fc;
+    color: #1a202c;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+  .intro {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .intro h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .intro p {
+    font-size: 15px;
+    color: #64748b;
+  }
+  .category {
+    margin-bottom: 48px;
+  }
+  .cat-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .cat-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .cat-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+    border-color: #4facfe;
+  }
+  .card.disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+  .card.disabled:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    border-color: #e2e8f0;
+  }
+  .scene-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #4facfe;
+    background: #eff6ff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+  .card.disabled .scene-tag {
+    color: #94a3b8;
+    background: #f1f5f9;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.5;
+  }
+  .status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .card:not(.disabled) .arrow {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 14px;
+    color: #4facfe;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .card:not(.disabled):hover .arrow {
+    opacity: 1;
+  }
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.88);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fade 0.2s ease;
+  }
+  .modal.active { display: flex; }
+  @keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .modal-inner {
+    max-width: 1100px;
+    width: 100%;
+    max-height: 92vh;
+    position: relative;
+    animation: zoom 0.25s ease;
+  }
+  @keyframes zoom {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-title {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .modal img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  .modal-close {
+    position: absolute;
+    top: -42px;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 24px 16px 40px; }
+    .intro h1 { font-size: 24px; }
+    .cat-title { font-size: 18px; }
+    .cards { grid-template-columns: 1fr; }
+    .modal { padding: 12px; }
+    .modal-close { top: -38px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>シーン別活用イメージ</h1>
+    <p>現場の「困った」を、Fixeyはどう解決するのか。<br>シーンをクリックすると4コマ漫画で活用イメージをご覧いただけます。</p>
+  </div>
+
+  <!-- 1. 故障発生時 -->
+  <section class="category">
+    <div class="cat-head">
+      <span class="cat-num">1</span>
+      <h2 class="cat-title">故障発生時</h2>
+    </div>
+    <div class="cards">
+      <div class="card" data-img="scene_01.jpg" data-title="経験ゼロでも30分で復旧">
+        <span class="scene-tag">SCENE 01</span>
+        <div class="card-title">経験の浅い保全マンが故障解決のヒントを得る</div>
+        <div class="card-desc">突然のライン停止。新人でもAIが過去の故障パターンから解決策を即提示。</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="card" data-img="scene_08.jpg" data-title="経験がなくても、危険を見抜く">
+        <span class="scene-tag">SCENE 08</span>
+        <div class="card-title">突発修理前の安全リスク予知</div>
+        <div class="card-desc">修理前にAIが感電・残圧などのリスクを警告。ヒヤリハットを未然に防ぐ。</div>
+        <span class="arrow">→</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 修理対応中 -->
+  <section class="category">
+    <div class="cat-head">
+      <span class="cat-num">2</span>
+      <h2 class="cat-title">修理対応中</h2>
+    </div>
+    <div class="cards">
+      <div class="card" data-img="scene_02.jpg" data-title="500ページのマニュアルを、10秒で要点に">
+        <span class="scene-tag">SCENE 02</span>
+        <div class="card-title">原因特定後にマニュアル該当箇所をサマライズ</div>
+        <div class="card-desc">分厚いマニュアルから必要な箇所だけをAIが抽出。図面付きで即表示。</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="card" data-img="scene_03.jpg" data-title="初めての修理も、ステップごとにガイド">
+        <span class="scene-tag">SCENE 03</span>
+        <div class="card-title">部品交換時の修理手順を具体ガイド</div>
+        <div class="card-desc">未経験の部品交換でも、写真・図解付きでステップごとに正しい手順を提示。</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="card" data-img="scene_05.jpg" data-title="現場の「困った」をAIが解決">
+        <span class="scene-tag">SCENE 05</span>
+        <div class="card-title">新人が必要な部品をすぐ見つけられる</div>
+        <div class="card-desc">型番だけでは分からなかった部品も、棚番号と写真付きで一発特定。</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">SCENE 06</span>
+        <div class="card-title">予備品がない時に互換部品を探す</div>
+        <div class="card-desc">欠品時でもAIが代替可能な互換部品を提案。修理を止めない。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 修理後 -->
+  <section class="category">
+    <div class="cat-head">
+      <span class="cat-num">3</span>
+      <h2 class="cat-title">修理後</h2>
+    </div>
+    <div class="cards">
+      <div class="card" data-img="scene_04.jpg" data-title="話しただけで、報告書ができる">
+        <span class="scene-tag">SCENE 04</span>
+        <div class="card-title">修理記録を音声入力でサポート</div>
+        <div class="card-desc">話すだけでAIが整った報告書に自動変換。残業ゼロで記録作成が完了。</div>
+        <span class="arrow">→</span>
+      </div>
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">SCENE 07</span>
+        <div class="card-title">部下の報告書レビュー・承認の効率化</div>
+        <div class="card-desc">管理職の確認工数を削減。抜け漏れもAIが自動検知。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 属人化・教育 -->
+  <section class="category">
+    <div class="cat-head">
+      <span class="cat-num">4</span>
+      <h2 class="cat-title">属人化・教育</h2>
+    </div>
+    <div class="cards">
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">EDUCATION</span>
+        <div class="card-title">ベテラン属人化の壁を壊す</div>
+        <div class="card-desc">「あの人しか分からない」をAIが誰でも対応できる状態に変える。</div>
+      </div>
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">EDUCATION</span>
+        <div class="card-title">新人が先輩なしでも自分で調べられる</div>
+        <div class="card-desc">OJT依存を減らし、新人の自立を加速。育成スピードを倍速化。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 予防保全・計画 -->
+  <section class="category">
+    <div class="cat-head">
+      <span class="cat-num">5</span>
+      <h2 class="cat-title">予防保全・計画</h2>
+    </div>
+    <div class="cards">
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">PLANNING</span>
+        <div class="card-title">突発対応に追われ予防保全が後回し</div>
+        <div class="card-desc">「先送り」を断ち切り、予防保全の時間を確保する仕組みづくり。</div>
+      </div>
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">PLANNING</span>
+        <div class="card-title">過剰点検・点検不足のバランス最適化</div>
+        <div class="card-desc">設備ごとのリスクに応じてAIが点検頻度を自動調整。</div>
+      </div>
+      <div class="card disabled">
+        <span class="status">準備中</span>
+        <span class="scene-tag">PLANNING</span>
+        <div class="card-title">予防保全計画をAIが自動作成</div>
+        <div class="card-desc">毎年同じ計画をコピペする作業から解放。データに基づいた最適計画を提案。</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-inner">
+    <button class="modal-close" id="modalClose" aria-label="閉じる">×</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script>
+(function() {
+  var IMG_BASE = "https://fixey-manga-deploy.vercel.app/yonkoma_images/";
+  var modal = document.getElementById("modal");
+  var modalImg = document.getElementById("modalImg");
+  var modalTitle = document.getElementById("modalTitle");
+  var modalClose = document.getElementById("modalClose");
+
+  document.querySelectorAll(".card").forEach(function(card) {
+    if (card.classList.contains("disabled")) return;
+    card.addEventListener("click", function() {
+      var img = card.getAttribute("data-img");
+      var title = card.getAttribute("data-title");
+      modalImg.src = IMG_BASE + img;
+      modalTitle.textContent = title || "";
+      modal.classList.add("active");
+    });
+  });
+
+  function close() {
+    modal.classList.remove("active");
+    modalImg.src = "";
+  }
+  modalClose.addEventListener("click", close);
+  modal.addEventListener("click", function(e) {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") close();
+  });
+})();
+</script>
+</body>
+</html>
