@@ -5,212 +5,255 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fixey シーン別活用イメージ</title>
 <style>
+  :root {
+    --navy-900: #0a1733;
+    --navy-800: #0f1f44;
+    --navy-700: #152a5c;
+    --navy-600: #1e3a7a;
+    --navy-500: #2b4b9a;
+    --navy-100: #e6ebf5;
+    --navy-50:  #f4f6fb;
+    --ink:      #0a1733;
+    --ink-60:   #4a5678;
+    --line:     #d9dfee;
+    --bg:       #f6f8fc;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     font-family: "Hiragino Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    background: #f7f9fc;
-    color: #1a202c;
+    background: var(--bg);
+    color: var(--ink);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
   .wrap {
-    max-width: 1100px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 40px 20px 60px;
+    padding: 48px 24px 72px;
   }
   .intro {
     text-align: center;
-    margin-bottom: 48px;
+    margin-bottom: 56px;
   }
   .intro h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 12px;
-    letter-spacing: 0.02em;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--navy-900);
+    margin-bottom: 14px;
+    letter-spacing: 0.04em;
+    position: relative;
+    display: inline-block;
+  }
+  .intro h1::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--navy-700), var(--navy-500));
+    margin: 16px auto 0;
+    border-radius: 2px;
   }
   .intro p {
     font-size: 15px;
-    color: #64748b;
+    color: var(--ink-60);
   }
+
   .category {
-    margin-bottom: 48px;
+    margin-bottom: 44px;
   }
   .cat-head {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #e2e8f0;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-600) 100%);
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(10, 23, 51, 0.18);
   }
   .cat-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: #fff;
-    font-weight: 700;
-    font-size: 16px;
+    background: #fff;
+    color: var(--navy-800);
+    font-weight: 800;
+    font-size: 15px;
     flex-shrink: 0;
   }
   .cat-title {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
-    color: #0f172a;
+    color: #fff;
+    letter-spacing: 0.02em;
   }
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
+
+  /* 箇条書きリスト */
+  .scene-list {
+    list-style: none;
+    padding: 6px 0 0 4px;
   }
-  .card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  .scene-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px dashed var(--line);
     cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid #e2e8f0;
+    transition: background 0.2s ease, transform 0.2s ease, padding-left 0.2s ease;
     position: relative;
-    overflow: hidden;
   }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-    border-color: #4facfe;
+  .scene-list li:last-child {
+    border-bottom: none;
   }
-  .card.disabled {
+  .scene-list li::before {
+    content: "▸";
+    color: var(--navy-600);
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .scene-list li:not(.disabled):hover {
+    background: var(--navy-50);
+    padding-left: 24px;
+  }
+  .scene-list li:not(.disabled):hover::before {
+    transform: translateX(4px);
+    color: var(--navy-800);
+  }
+  .scene-list li.disabled {
     cursor: default;
-    opacity: 0.6;
+    opacity: 0.55;
   }
-  .card.disabled:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
-    border-color: #e2e8f0;
+  .scene-list li.disabled::before {
+    color: #9aa3bd;
   }
+
   .scene-tag {
     display: inline-block;
+    min-width: 88px;
+    text-align: center;
     font-size: 11px;
     font-weight: 700;
-    color: #4facfe;
-    background: #eff6ff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    letter-spacing: 0.05em;
+    color: #fff;
+    background: var(--navy-700);
+    padding: 4px 10px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
   }
-  .card.disabled .scene-tag {
-    color: #94a3b8;
-    background: #f1f5f9;
+  .scene-list li.disabled .scene-tag {
+    background: #9aa3bd;
   }
-  .card-title {
+  .scene-title {
     font-size: 15px;
-    font-weight: 700;
-    color: #1a202c;
-    margin-bottom: 8px;
-    line-height: 1.4;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1;
   }
-  .card-desc {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.5;
-  }
-  .status {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+  .status-label {
     font-size: 10px;
     font-weight: 700;
-    padding: 3px 8px;
+    padding: 3px 9px;
     border-radius: 10px;
-    background: #fef3c7;
-    color: #92400e;
+    background: #eef1f9;
+    color: #6b7594;
+    flex-shrink: 0;
   }
-  .card:not(.disabled) .arrow {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    font-size: 14px;
-    color: #4facfe;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-  .card:not(.disabled):hover .arrow {
-    opacity: 1;
-  }
+
   /* Modal */
   .modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.88);
+    background: rgba(10, 23, 51, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 9999;
     justify-content: center;
     align-items: center;
-    padding: 20px;
-    animation: fade 0.2s ease;
+    padding: 24px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
   }
-  .modal.active { display: flex; }
-  @keyframes fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .modal.active {
+    display: flex;
+    opacity: 1;
   }
   .modal-inner {
     max-width: 1100px;
     width: 100%;
     max-height: 92vh;
     position: relative;
-    animation: zoom 0.25s ease;
+    transform: translateY(40px) scale(0.85) rotateX(-6deg);
+    opacity: 0;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 1.2, 0.36, 1),
+      opacity 0.35s ease;
+    transform-origin: center bottom;
+    perspective: 1200px;
   }
-  @keyframes zoom {
-    from { transform: scale(0.92); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+  .modal.active .modal-inner {
+    transform: translateY(0) scale(1) rotateX(0);
+    opacity: 1;
   }
   .modal-title {
     color: #fff;
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     text-align: center;
+    letter-spacing: 0.03em;
+    transform: translateY(-8px);
+    opacity: 0;
+    transition: all 0.5s ease 0.15s;
+  }
+  .modal.active .modal-title {
+    transform: translateY(0);
+    opacity: 1;
   }
   .modal img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 10px;
     display: block;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
   }
   .modal-close {
     position: absolute;
-    top: -42px;
+    top: -46px;
     right: 0;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.25);
     color: #fff;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s ease;
+    transition: all 0.2s ease;
   }
   .modal-close:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.28);
+    transform: rotate(90deg);
   }
   @media (max-width: 640px) {
-    .wrap { padding: 24px 16px 40px; }
+    .wrap { padding: 28px 16px 48px; }
     .intro h1 { font-size: 24px; }
-    .cat-title { font-size: 18px; }
-    .cards { grid-template-columns: 1fr; }
-    .modal { padding: 12px; }
-    .modal-close { top: -38px; }
+    .cat-title { font-size: 17px; }
+    .scene-list li { padding: 12px 12px; gap: 10px; }
+    .scene-tag { min-width: 74px; font-size: 10px; }
+    .scene-title { font-size: 13px; }
+    .modal { padding: 14px; }
+    .modal-close { top: -42px; }
   }
 </style>
 </head>
@@ -227,20 +270,16 @@
       <span class="cat-num">1</span>
       <h2 class="cat-title">故障発生時</h2>
     </div>
-    <div class="cards">
-      <div class="card" data-img="scene_01.jpg" data-title="経験ゼロでも30分で復旧">
+    <ul class="scene-list">
+      <li data-img="scene_01.jpg" data-title="経験ゼロでも30分で復旧">
         <span class="scene-tag">SCENE 01</span>
-        <div class="card-title">経験の浅い保全マンが故障解決のヒントを得る</div>
-        <div class="card-desc">突然のライン停止。新人でもAIが過去の故障パターンから解決策を即提示。</div>
-        <span class="arrow">→</span>
-      </div>
-      <div class="card" data-img="scene_08.jpg" data-title="経験がなくても、危険を見抜く">
+        <span class="scene-title">経験の浅い保全マンが故障解決のヒントを得る</span>
+      </li>
+      <li data-img="scene_08.jpg" data-title="経験がなくても、危険を見抜く">
         <span class="scene-tag">SCENE 08</span>
-        <div class="card-title">突発修理前の安全リスク予知</div>
-        <div class="card-desc">修理前にAIが感電・残圧などのリスクを警告。ヒヤリハットを未然に防ぐ。</div>
-        <span class="arrow">→</span>
-      </div>
-    </div>
+        <span class="scene-title">突発修理前の安全リスク予知</span>
+      </li>
+    </ul>
   </section>
 
   <!-- 2. 修理対応中 -->
@@ -249,32 +288,25 @@
       <span class="cat-num">2</span>
       <h2 class="cat-title">修理対応中</h2>
     </div>
-    <div class="cards">
-      <div class="card" data-img="scene_02.jpg" data-title="500ページのマニュアルを、10秒で要点に">
+    <ul class="scene-list">
+      <li data-img="scene_02.jpg" data-title="500ページのマニュアルを、10秒で要点に">
         <span class="scene-tag">SCENE 02</span>
-        <div class="card-title">原因特定後にマニュアル該当箇所をサマライズ</div>
-        <div class="card-desc">分厚いマニュアルから必要な箇所だけをAIが抽出。図面付きで即表示。</div>
-        <span class="arrow">→</span>
-      </div>
-      <div class="card" data-img="scene_03.jpg" data-title="初めての修理も、ステップごとにガイド">
+        <span class="scene-title">原因特定後にマニュアル該当箇所をサマライズ</span>
+      </li>
+      <li data-img="scene_03.jpg" data-title="初めての修理も、ステップごとにガイド">
         <span class="scene-tag">SCENE 03</span>
-        <div class="card-title">部品交換時の修理手順を具体ガイド</div>
-        <div class="card-desc">未経験の部品交換でも、写真・図解付きでステップごとに正しい手順を提示。</div>
-        <span class="arrow">→</span>
-      </div>
-      <div class="card" data-img="scene_05.jpg" data-title="現場の「困った」をAIが解決">
+        <span class="scene-title">部品交換時の修理手順を具体ガイド</span>
+      </li>
+      <li data-img="scene_05.jpg" data-title="現場の「困った」をAIが解決">
         <span class="scene-tag">SCENE 05</span>
-        <div class="card-title">新人が必要な部品をすぐ見つけられる</div>
-        <div class="card-desc">型番だけでは分からなかった部品も、棚番号と写真付きで一発特定。</div>
-        <span class="arrow">→</span>
-      </div>
-      <div class="card disabled">
-        <span class="status">準備中</span>
+        <span class="scene-title">新人が必要な部品をすぐ見つけられる</span>
+      </li>
+      <li class="disabled">
         <span class="scene-tag">SCENE 06</span>
-        <div class="card-title">予備品がない時に互換部品を探す</div>
-        <div class="card-desc">欠品時でもAIが代替可能な互換部品を提案。修理を止めない。</div>
-      </div>
-    </div>
+        <span class="scene-title">予備品がない時に互換部品を探す</span>
+        <span class="status-label">準備中</span>
+      </li>
+    </ul>
   </section>
 
   <!-- 3. 修理後 -->
@@ -283,20 +315,17 @@
       <span class="cat-num">3</span>
       <h2 class="cat-title">修理後</h2>
     </div>
-    <div class="cards">
-      <div class="card" data-img="scene_04.jpg" data-title="話しただけで、報告書ができる">
+    <ul class="scene-list">
+      <li data-img="scene_04.jpg" data-title="話しただけで、報告書ができる">
         <span class="scene-tag">SCENE 04</span>
-        <div class="card-title">修理記録を音声入力でサポート</div>
-        <div class="card-desc">話すだけでAIが整った報告書に自動変換。残業ゼロで記録作成が完了。</div>
-        <span class="arrow">→</span>
-      </div>
-      <div class="card disabled">
-        <span class="status">準備中</span>
+        <span class="scene-title">修理記録を音声入力でサポート</span>
+      </li>
+      <li class="disabled">
         <span class="scene-tag">SCENE 07</span>
-        <div class="card-title">部下の報告書レビュー・承認の効率化</div>
-        <div class="card-desc">管理職の確認工数を削減。抜け漏れもAIが自動検知。</div>
-      </div>
-    </div>
+        <span class="scene-title">部下の報告書レビュー・承認の効率化</span>
+        <span class="status-label">準備中</span>
+      </li>
+    </ul>
   </section>
 
   <!-- 4. 属人化・教育 -->
@@ -305,20 +334,18 @@
       <span class="cat-num">4</span>
       <h2 class="cat-title">属人化・教育</h2>
     </div>
-    <div class="cards">
-      <div class="card disabled">
-        <span class="status">準備中</span>
-        <span class="scene-tag">EDUCATION</span>
-        <div class="card-title">ベテラン属人化の壁を壊す</div>
-        <div class="card-desc">「あの人しか分からない」をAIが誰でも対応できる状態に変える。</div>
-      </div>
-      <div class="card disabled">
-        <span class="status">準備中</span>
-        <span class="scene-tag">EDUCATION</span>
-        <div class="card-title">新人が先輩なしでも自分で調べられる</div>
-        <div class="card-desc">OJT依存を減らし、新人の自立を加速。育成スピードを倍速化。</div>
-      </div>
-    </div>
+    <ul class="scene-list">
+      <li class="disabled">
+        <span class="scene-tag">SCENE 09</span>
+        <span class="scene-title">ベテラン属人化の壁を壊す</span>
+        <span class="status-label">準備中</span>
+      </li>
+      <li class="disabled">
+        <span class="scene-tag">SCENE 10</span>
+        <span class="scene-title">新人が先輩なしでも自分で調べられる</span>
+        <span class="status-label">準備中</span>
+      </li>
+    </ul>
   </section>
 
   <!-- 5. 予防保全・計画 -->
@@ -327,26 +354,23 @@
       <span class="cat-num">5</span>
       <h2 class="cat-title">予防保全・計画</h2>
     </div>
-    <div class="cards">
-      <div class="card disabled">
-        <span class="status">準備中</span>
-        <span class="scene-tag">PLANNING</span>
-        <div class="card-title">突発対応に追われ予防保全が後回し</div>
-        <div class="card-desc">「先送り」を断ち切り、予防保全の時間を確保する仕組みづくり。</div>
-      </div>
-      <div class="card disabled">
-        <span class="status">準備中</span>
-        <span class="scene-tag">PLANNING</span>
-        <div class="card-title">過剰点検・点検不足のバランス最適化</div>
-        <div class="card-desc">設備ごとのリスクに応じてAIが点検頻度を自動調整。</div>
-      </div>
-      <div class="card disabled">
-        <span class="status">準備中</span>
-        <span class="scene-tag">PLANNING</span>
-        <div class="card-title">予防保全計画をAIが自動作成</div>
-        <div class="card-desc">毎年同じ計画をコピペする作業から解放。データに基づいた最適計画を提案。</div>
-      </div>
-    </div>
+    <ul class="scene-list">
+      <li class="disabled">
+        <span class="scene-tag">SCENE 11</span>
+        <span class="scene-title">突発対応に追われ予防保全が後回し</span>
+        <span class="status-label">準備中</span>
+      </li>
+      <li class="disabled">
+        <span class="scene-tag">SCENE 12</span>
+        <span class="scene-title">過剰点検・点検不足のバランス最適化</span>
+        <span class="status-label">準備中</span>
+      </li>
+      <li class="disabled">
+        <span class="scene-tag">SCENE 13</span>
+        <span class="scene-title">予防保全計画をAIが自動作成</span>
+        <span class="status-label">準備中</span>
+      </li>
+    </ul>
   </section>
 </div>
 
@@ -367,20 +391,27 @@
   var modalTitle = document.getElementById("modalTitle");
   var modalClose = document.getElementById("modalClose");
 
-  document.querySelectorAll(".card").forEach(function(card) {
-    if (card.classList.contains("disabled")) return;
-    card.addEventListener("click", function() {
-      var img = card.getAttribute("data-img");
-      var title = card.getAttribute("data-title");
+  document.querySelectorAll(".scene-list li").forEach(function(item) {
+    if (item.classList.contains("disabled")) return;
+    item.addEventListener("click", function() {
+      var img = item.getAttribute("data-img");
+      var title = item.getAttribute("data-title");
+      if (!img) return;
       modalImg.src = IMG_BASE + img;
       modalTitle.textContent = title || "";
-      modal.classList.add("active");
+      modal.style.display = "flex";
+      requestAnimationFrame(function() {
+        modal.classList.add("active");
+      });
     });
   });
 
   function close() {
     modal.classList.remove("active");
-    modalImg.src = "";
+    setTimeout(function() {
+      modal.style.display = "";
+      modalImg.src = "";
+    }, 350);
   }
   modalClose.addEventListener("click", close);
   modal.addEventListener("click", function(e) {
