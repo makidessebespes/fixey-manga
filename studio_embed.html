@@ -164,24 +164,25 @@
     flex-shrink: 0;
   }
 
-  /* Modal - iframe埋め込み時は親ビューポートの中央に動的配置 */
+  /* ===== Modal ===== */
   .modal {
     display: none;
-    position: absolute; /* iframeのドキュメントに対して絶対配置 */
+    position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    height: 100vh; /* 親ビューポート受信前のフォールバック */
+    height: 100vh;
     background: rgba(10, 23, 51, 0.72);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    z-index: 9999;
+    z-index: 999;
     justify-content: center;
     align-items: center;
     padding: 24px;
     opacity: 0;
     transition: opacity 0.35s ease;
     pointer-events: none;
+    will-change: transform, opacity;
   }
   .modal.active {
     display: flex;
@@ -199,12 +200,41 @@
       transform 0.55s cubic-bezier(0.22, 1.2, 0.36, 1),
       opacity 0.35s ease;
     transform-origin: center bottom;
-    perspective: 1200px;
+    perspective: 800px;
   }
   .modal.active .modal-inner {
     transform: translateY(0) scale(1) rotateX(0);
     opacity: 1;
   }
+
+  .modal-close {
+    position: absolute;
+    top: -36px;
+    right: 0;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    font-size: 32px;
+    cursor: pointer;
+    transition: color 0.2s;
+    line-height: 1;
+  }
+  .modal-close:hover { color: #fff; }
+
+  .modal-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    transform: scale(0.92);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.22, 1.2, 0.36, 1) 0.05s;
+  }
+  .modal.active .modal-img {
+    transform: scale(1);
+    opacity: 1;
+  }
+
   .modal-title {
     color: #fff;
     font-size: 18px;
@@ -220,36 +250,7 @@
     transform: translateY(0);
     opacity: 1;
   }
-  .modal img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    display: block;
-    box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.55),
-      0 0 0 1px rgba(255, 255, 255, 0.05);
-  }
-  .modal-close {
-    position: absolute;
-    top: -46px;
-    right: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    color: #fff;
-    font-size: 22px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-  .modal-close:hover {
-    background: rgba(255, 255, 255, 0.28);
-    transform: rotate(90deg);
-  }
+
   @media (max-width: 640px) {
     .wrap { padding: 28px 16px 48px; }
     .intro h1 { font-size: 24px; }
@@ -379,12 +380,11 @@
   </section>
 </div>
 
-<!-- Modal -->
 <div class="modal" id="modal">
   <div class="modal-inner">
-    <button class="modal-close" id="modalClose" aria-label="閉じる">×</button>
+    <button class="modal-close" id="modalClose" aria-label="閉じる">&times;</button>
     <div class="modal-title" id="modalTitle"></div>
-    <img id="modalImg" src="" alt="">
+    <img id="modalImg" class="modal-img" alt="">
   </div>
 </div>
 
@@ -396,32 +396,37 @@
   var modalTitle = document.getElementById("modalTitle");
   var modalClose = document.getElementById("modalClose");
 
-  // 親ビューポート情報（postMessage で受信）
+  // --- 親ビューポート情報（postMessage で受信） ---
   var parentViewport = null;
+  var pendingOpen = null; // クリック後のviewport待ちフラグ
 
-  // モーダルの位置を親ビューポート中央に合わせる
   function applyModalPosition() {
     if (parentViewport && typeof parentViewport.iframeTop === "number") {
-      // iframeのページ内座標系で、親ビューポートの可視範囲を計算
-      var iframeTop = parentViewport.iframeTop;           // 親viewport内でのiframe上端
+      var iframeTop = parentViewport.iframeTop;
       var iframeHeight = parentViewport.iframeHeight || document.documentElement.scrollHeight;
       var vpH = parentViewport.viewportHeight;
-
-      // iframeローカル座標での可視範囲
       var visTop = Math.max(0, -iframeTop);
       var visBottom = Math.min(iframeHeight, vpH - iframeTop);
       var visHeight = Math.max(0, visBottom - visTop);
-
       if (visHeight > 0) {
         modal.style.top = visTop + "px";
         modal.style.height = visHeight + "px";
         return;
       }
     }
-    // フォールバック：iframeの中央にポジショニング
+    // フォールバック
     var fallbackH = Math.min(window.innerHeight, document.documentElement.scrollHeight);
     modal.style.top = "0px";
     modal.style.height = fallbackH + "px";
+  }
+
+  // モーダルを実際に表示するヘルパー
+  function showModal() {
+    applyModalPosition();
+    modal.style.display = "flex";
+    requestAnimationFrame(function() {
+      modal.classList.add("active");
+    });
   }
 
   // 親ページから scroll / resize 情報を受信
@@ -429,12 +434,22 @@
     if (!e.data || typeof e.data !== "object") return;
     if (e.data.type !== "fixey:parent-viewport") return;
     parentViewport = e.data;
+
+    // ★ viewport待ちでモーダルを開こうとしていた場合、ここで開く
+    if (pendingOpen) {
+      clearTimeout(pendingOpen.timer);
+      pendingOpen = null;
+      showModal();
+      return;
+    }
+
+    // 既に開いている場合は位置を更新
     if (modal.classList.contains("active")) {
       applyModalPosition();
     }
   });
 
-  // 親ページへ「準備できたので viewport 情報ちょうだい」と通知
+  // 親ページへ viewport 情報をリクエスト
   function requestParentViewport() {
     try {
       if (window.parent && window.parent !== window) {
@@ -442,9 +457,14 @@
       }
     } catch (err) {}
   }
+
+  // 初回リクエスト（早期に parentViewport を確保するため複数回）
   requestParentViewport();
   window.addEventListener("load", requestParentViewport);
+  setTimeout(requestParentViewport, 200);
+  setTimeout(requestParentViewport, 600);
 
+  // シーンクリックでモーダルを開く
   document.querySelectorAll(".scene-list li").forEach(function(item) {
     if (item.classList.contains("disabled")) return;
     item.addEventListener("click", function() {
@@ -453,29 +473,42 @@
       if (!img) return;
       modalImg.src = IMG_BASE + img;
       modalTitle.textContent = title || "";
-      // 親の最新情報を要求してから表示
-      requestParentViewport();
-      applyModalPosition();
-      modal.style.display = "flex";
-      requestAnimationFrame(function() {
-        modal.classList.add("active");
-      });
+
+      // ★ viewport データが十分新鮮か判定
+      //   parentViewport が既にあればそのまま即座に開く
+      //   なければ親にリクエストしてレスポンスを待つ（最大150ms）
+      if (parentViewport) {
+        // 最新データを念のためリクエスト（次回用）
+        requestParentViewport();
+        showModal();
+      } else {
+        // viewportデータが未到着 → リクエストしてレスポンスを待つ
+        requestParentViewport();
+        pendingOpen = {
+          timer: setTimeout(function() {
+            // 150ms待ってもレスポンスなし → フォールバックで開く
+            pendingOpen = null;
+            showModal();
+          }, 150)
+        };
+      }
     });
   });
 
-  function close() {
+  // 閉じる
+  function closeModal() {
     modal.classList.remove("active");
     setTimeout(function() {
       modal.style.display = "";
       modalImg.src = "";
     }, 350);
   }
-  modalClose.addEventListener("click", close);
+  modalClose.addEventListener("click", closeModal);
   modal.addEventListener("click", function(e) {
-    if (e.target === modal) close();
+    if (e.target === modal) closeModal();
   });
   document.addEventListener("keydown", function(e) {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") closeModal();
   });
 })();
 </script>
